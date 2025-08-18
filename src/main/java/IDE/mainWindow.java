@@ -1,3 +1,5 @@
+package IDE;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -5,10 +7,12 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.fife.ui.rtextarea.*;
 import org.fife.ui.rsyntaxtextarea.*;
+import sideBar.SideBar;
+import utils.*;
+import sideBar.*;
 
 
 public class mainWindow extends JFrame {
@@ -31,11 +35,11 @@ public class mainWindow extends JFrame {
         this.sidePanel = new SideBar(this, editorPane);
         this.add(sidePanel);
 
-//        JMenuBar myMenu = new menuBar(this.sidePanel, this.editorPane, this);
-//
-//        myMenu.putClientProperty("JComponent.sizeVariant", "large");
-//        myMenu.setBackground(new Color(245, 245, 245));
-//        myMenu.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        JMenuBar myMenu = new menu.menuBar(this.sidePanel, this.editorPane, this);
+
+        myMenu.putClientProperty("JComponent.sizeVariant", "large");
+        myMenu.setBackground(new Color(245, 245, 245));
+        myMenu.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         createOutputPanel();
         JMenu files = new JMenu("Files");
 
@@ -102,15 +106,6 @@ public class mainWindow extends JFrame {
         runCurrentFile.addActionListener(e -> runCurrentFile());
         runMenu.add(runCurrentFile);
 
-        JMenuItem saveFile = new JMenuItem("Save");
-        saveFile.setFont(menuFont);
-        files.add(saveFile);
-        saveFile.addActionListener(e -> saveCurrentEditor());
-
-        JMenuItem saveAsFile = new JMenuItem("Save As...");
-        saveAsFile.setFont(menuFont);
-        files.add(saveAsFile);
-        saveAsFile.addActionListener(e -> saveCurrentEditorAs());
 
 
         JMenu edit = new JMenu("Edit");
@@ -120,14 +115,14 @@ public class mainWindow extends JFrame {
         JMenu search = new JMenu("Search");
         search.setFont(menuFont);
 
-//        myMenu.add(files);
-//        myMenu.add(edit);
-//        myMenu.add(search);
-//        myMenu.add(viewOnline);
-//        myMenu.add(runMenu);
+        myMenu.add(files);
+        myMenu.add(edit);
+        myMenu.add(search);
+        myMenu.add(viewOnline);
+        myMenu.add(runMenu);
 
         this.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("icons/logo.png")));
-//        this.setJMenuBar(myMenu);
+        this.setJMenuBar(myMenu);
         this.setSize(1400, 800);
         this.setTitle("Chax IDE");
         this.setLocationRelativeTo(null);
@@ -146,7 +141,7 @@ public class mainWindow extends JFrame {
      * Custom JPanel to hold the RSyntaxTextArea and its associated File.
      * This helps in tracking file path and modification status.
      */
-    private class EditorPanel extends JPanel {
+    public class EditorPanel extends JPanel {
         private RSyntaxTextArea textArea;
         private File associatedFile;
         private boolean modified = false;
@@ -458,14 +453,7 @@ public class mainWindow extends JFrame {
         return null;
     }
 
-    public void saveCurrentEditor() {
-        int selectedIndex = this.editorPane.getSelectedIndex();
-        if (selectedIndex >= 0 && selectedIndex < editorPane.getTabCount()) {
-            saveTabContent(selectedIndex);
-        } else {
-            JOptionPane.showMessageDialog(this, "No file selected to save.", "Info", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+
 
     public void saveCurrentEditorAs() {
         int selectedIndex = this.editorPane.getSelectedIndex();
@@ -797,7 +785,7 @@ public class mainWindow extends JFrame {
                     desktop.open(file);
                     outputArea.append("[SYSTEM] Opened '" + file.getName() + "' with system default application.\n");
                 } else {
-                    outputArea.append("[ERROR] Desktop OPEN action not supported on this system.\n");
+                    outputArea.append("[ERROR] Desktop OPEN action not supported on  system.\n");
                 }
             } else {
                 outputArea.append("[ERROR] Desktop operations not supported on this system.\n");
