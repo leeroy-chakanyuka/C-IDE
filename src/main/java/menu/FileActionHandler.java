@@ -1,10 +1,13 @@
 package menu;
 
+import codeEditor.EditorPanel;
 import codeEditor.Tabs;
 import sideBar.*;
 import utils.*;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
 import java.io.*;
 
 public class FileActionHandler {
@@ -114,7 +117,76 @@ public class FileActionHandler {
         }
     }
 
+    public void saveAllFiles(){
+        for (int i = 0; i < editorPane.getTabCount(); i++) {
+            Component comp = editorPane.getComponentAt(i);
+            if (comp instanceof EditorPanel) {
+                EditorPanel editorPanel = (EditorPanel) comp;
+                if (editorPanel.isModified()) {
+                    tab.saveTabContent(i);
+                }
+            }
+        }
 
+    }
+
+    public void openFolder(){
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = fileChooser.showOpenDialog(owner);
+
+        if(result == JFileChooser.APPROVE_OPTION){
+            File selectedFolder = fileChooser.getSelectedFile();
+            if(selectedFolder != null && selectedFolder.isDirectory()){
+                lastOpenedDirectory = selectedFolder.getAbsolutePath();
+
+                try {
+                    sidePanel.renderDirectory(selectedFolder.getAbsolutePath());
+                    JOptionPane.showMessageDialog(owner, "Folder opened: " + lastOpenedDirectory);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(owner,
+                            "Error opening folder: " + selectedFolder.getAbsolutePath() + "\n" + e.getMessage(),
+                            "Folder Open Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+    public void closeCurrentEditor() {
+        int selectedIndex = editorPane.getSelectedIndex();
+        if (selectedIndex != -1) {
+            tab.closeTab(selectedIndex);
+        } else {
+            JOptionPane.showMessageDialog(owner, "No file is currently open.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public void closeAllEditors() {
+        // Loop until all tabs are closed
+        while (editorPane.getTabCount() > 0) {
+            tab.closeTab(0);
+        }
+    }
+
+    private void closeAllTabs() {
+        // Work backwards to avoid index shifting issues
+        for (int i = editorPane.getTabCount() - 1; i >= 0; i--) {
+            if (!tab.closeTab(i)) {
+
+                break;
+            }
+        }
+    }
+
+    public void exitApplication() {
+        closeAllEditors();
+
+
+        if (editorPane.getTabCount() == 0) {
+            System.exit(0);
+        }
+    }
 
 
 }

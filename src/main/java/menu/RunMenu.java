@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class RunMenu extends JMenu{
-    private final Font myFont = new Font("verdana", Font.BOLD, 14);
+    private final Font myFont = new Font("verdana", Font.PLAIN, 13);
 
     public RunMenu(){
         this.setText("Run");

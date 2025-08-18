@@ -18,11 +18,29 @@ public class FileMenu extends JMenu {
         this.doThings = new FileActionHandler(sidePanel,  editorPane, owner);
         this.setText("Files");
         this.setFont(myFont);
+
         this.newFile();
         this.openFile();
+        this.newFolder();
+        this.openFolder();
+        this.addSeparator();
+
         this.saveFile();
         this.saveFileAs();
-        this.newFolder();
+        this.saveAll();
+        this.addSeparator();
+
+        this.closeTab();
+        this.closeAll();
+        this.addSeparator();
+
+        this.exitApp();
+    }
+    public void exitApp() {
+        JMenuItem exit = new JMenuItem("Exit");
+        exit.setFont(myFont);
+        this.add(exit);
+        exit.addActionListener(e -> doThings.exitApplication());
     }
 
     public void newFile(){
@@ -61,6 +79,31 @@ public class FileMenu extends JMenu {
     }
 
     public void openFolder(){
-
+        JMenuItem openFolder = new JMenuItem("Open Folder");
+        openFolder.setFont(myFont);
+        this.add(openFolder);
+        openFolder.addActionListener((e) -> {doThings.openFolder();});
     }
+
+    public void saveAll(){
+        JMenuItem saveAll = new JMenuItem("Save All");
+        saveAll.setFont(myFont);
+        this.add(saveAll);
+        saveAll.addActionListener((e) -> {doThings.saveAllFiles();});
+    }
+
+    public void closeTab(){
+        JMenuItem ct = new JMenuItem("Close Current Editor");
+        ct.setFont(myFont);
+        this.add(ct);
+        ct.addActionListener((e) -> {doThings.closeCurrentEditor();});
+    }
+
+    public void closeAll(){
+        JMenuItem closeAll = new JMenuItem("Close All");
+        closeAll.setFont(myFont);
+        this.add(closeAll);
+        closeAll.addActionListener((e) -> {doThings.closeAllEditors();});
+    }
+
 }

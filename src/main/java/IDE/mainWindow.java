@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
@@ -15,7 +16,9 @@ import utils.*;
 import sideBar.*;
 
 
+
 public class mainWindow extends JFrame {
+    private UndoManager undoManager;
     private SideBar sidePanel;
     public JTabbedPane editorPane;
     private Font myFont = new Font("verdana", Font.BOLD, 14);
@@ -23,7 +26,9 @@ public class mainWindow extends JFrame {
     private JTextArea outputArea;
     private configReader reader = new configReader(config.getIdeHomePath(), config.getDataFile(), config.META_CONFIG_FILE);
     private Font menuFont = new Font("vedana", Font.PLAIN, 14 );
+
     public mainWindow() throws IOException {
+        this.undoManager = new UndoManager();
 
         this.setLayout(null);
 
@@ -36,90 +41,7 @@ public class mainWindow extends JFrame {
         this.add(sidePanel);
 
         JMenuBar myMenu = new menu.menuBar(this.sidePanel, this.editorPane, this);
-
-        myMenu.putClientProperty("JComponent.sizeVariant", "large");
-        myMenu.setBackground(new Color(245, 245, 245));
-        myMenu.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        createOutputPanel();
-        JMenu files = new JMenu("Files");
-
-        files.setFont(menuFont);
-        JMenuItem newFile = new JMenuItem("New File");
-        newFile.setFont(menuFont);
-        newFile.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        files.add(newFile);
-        newFile.addActionListener((e) -> {
-            NewFileDialog dialog = new NewFileDialog(this);
-            dialog.setVisible(true);
-
-            if (dialog.isCreated()) {
-                File newFileOnDisk = dialog.getSelectedFile();
-                String syntaxStyle = dialog.getSelectedLanguageSyntax();
-                try {
-                    // Create the file on disk
-                    if (!newFileOnDisk.exists()) {
-                        newFileOnDisk.createNewFile();
-                    }
-                    // Open it in a new tab
-                    newPopulatedTab(newFileOnDisk.getName(), "", syntaxStyle, newFileOnDisk);
-                    refreshFileExplorer();
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this,
-                            "Error creating new file: " + ex.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            refreshFileExplorer();
-        });
-
-        JMenuItem openFile = new JMenuItem("Open");
-        openFile.setFont(menuFont);
-        files.add(openFile);
-        openFile.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                try {
-                    String content = readFileContent(selectedFile);
-                    String syntaxStyle = detectSyntaxStyle(selectedFile.getName());
-                    // Check if the file is already open
-                    int existingTabIndex = findOpenFileTab(selectedFile);
-                    if (existingTabIndex != -1) {
-                        editorPane.setSelectedIndex(existingTabIndex);
-                        JOptionPane.showMessageDialog(this, "File is already open.", "Info", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        newPopulatedTab(selectedFile.getName(), content, syntaxStyle, selectedFile);
-                    }
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, "Error opening file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-
-        JMenu runMenu = new JMenu("Run");
-        runMenu.setFont(menuFont);
-        JMenuItem runCurrentFile = new JMenuItem("Run Current File");
-        runCurrentFile.setFont(menuFont);
-        runCurrentFile.addActionListener(e -> runCurrentFile());
-        runMenu.add(runCurrentFile);
-
-
-
-        JMenu edit = new JMenu("Edit");
-        edit.setFont(menuFont);
-        JMenu viewOnline = new JMenu("View page");
-        viewOnline.setFont(menuFont);
-        JMenu search = new JMenu("Search");
-        search.setFont(menuFont);
-
-        myMenu.add(files);
-        myMenu.add(edit);
-        myMenu.add(search);
-        myMenu.add(viewOnline);
-        myMenu.add(runMenu);
+        this.createOutputPanel();
 
         this.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("icons/logo.png")));
         this.setJMenuBar(myMenu);
@@ -152,6 +74,7 @@ public class mainWindow extends JFrame {
             this.modified = false;
 
             this.textArea = new RSyntaxTextArea(70, 180);
+            this.textArea.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
             this.textArea.setText(content);
             this.textArea.setSyntaxEditingStyle(syntaxStyle);
             this.textArea.setCodeFoldingEnabled(true);
@@ -188,6 +111,10 @@ public class mainWindow extends JFrame {
             fileInfo.setFont(new Font("Arial", Font.PLAIN, 10));
             infoPanel.add(fileInfo);
             this.add(infoPanel, BorderLayout.SOUTH);
+        }
+
+        public UndoManager getUndoManager() {
+            return undoManager;
         }
 
         public RSyntaxTextArea getTextArea() {
@@ -304,89 +231,6 @@ public class mainWindow extends JFrame {
 
 
 
-    public void newEditor(String name, File file) {
-        String tabName = (file != null) ? file.getName() : name;
-        String content = "";
-        String syntaxStyle = SyntaxConstants.SYNTAX_STYLE_NONE;
-
-        EditorPanel editorPanel = new EditorPanel(file, content, syntaxStyle);
-
-        int tabIndex = this.editorPane.getTabCount();
-        this.editorPane.addTab(tabName, editorPanel);
-
-        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        tabPanel.setOpaque(false);
-
-        JLabel tabLabel = new JLabel(tabName);
-        tabLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-
-        JButton closeButton = new JButton("×");
-        closeButton.setPreferredSize(new Dimension(17, 17));
-        closeButton.setFont(new Font("Arial", Font.BOLD, 12));
-        closeButton.setBorder(null);
-        closeButton.setContentAreaFilled(false);
-        closeButton.setFocusPainted(false);
-        closeButton.setRolloverEnabled(true);
-        closeButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                closeButton.setForeground(Color.RED);
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                closeButton.setForeground(Color.BLACK);
-            }
-        });
-
-        closeButton.addActionListener(e -> {
-            int tabToClose = editorPane.indexOfTabComponent(tabPanel);
-            if (tabToClose != -1) {
-                EditorPanel panel = (EditorPanel) editorPane.getComponentAt(tabToClose);
-                if (panel.isModified()) {
-                    int result = JOptionPane.showConfirmDialog(
-                            this,
-                            "File '" + editorPane.getTitleAt(tabToClose).replace("*", "") + "' has unsaved changes. Save before closing?",
-                            "Unsaved Changes",
-                            JOptionPane.YES_NO_CANCEL_OPTION
-                    );
-
-                    if (result == JOptionPane.YES_OPTION) {
-                        saveTabContent(tabToClose);
-                    } else if (result == JOptionPane.CANCEL_OPTION) {
-                        return;
-                    }
-                }
-                editorPane.removeTabAt(tabToClose);
-            }
-        });
-
-        tabPanel.add(tabLabel);
-        tabPanel.add(Box.createHorizontalStrut(5));
-        tabPanel.add(closeButton);
-
-        this.editorPane.setTabComponentAt(tabIndex, tabPanel);
-        this.editorPane.setSelectedIndex(tabIndex);
-        editorPanel.getTextArea().requestFocusInWindow();
-    }
-
-
-    public void focusTerminalInput() {
-        if (commandInput != null) {
-            commandInput.requestFocusInWindow();
-        }
-    }
-
-    private boolean isTabModified(int tabIndex) {
-        if (tabIndex >= 0 && tabIndex < editorPane.getTabCount()) {
-            Component comp = editorPane.getComponentAt(tabIndex);
-            if (comp instanceof EditorPanel) {
-                return ((EditorPanel) comp).isModified();
-            }
-        }
-        return false;
-    }
-
     private void saveTabContent(int tabIndex) {
         if (tabIndex >= 0 && tabIndex < editorPane.getTabCount()) {
             Component comp = editorPane.getComponentAt(tabIndex);
@@ -440,20 +284,6 @@ public class mainWindow extends JFrame {
 
         this.add(outputPanel);
     }
-
-    public String getCurrentEditorContent() {
-        int selectedIndex = this.editorPane.getSelectedIndex();
-        if (selectedIndex >= 0 && selectedIndex < editorPane.getTabCount()) {
-            Component comp = this.editorPane.getComponentAt(selectedIndex);
-            if (comp instanceof EditorPanel) {
-                EditorPanel editorPanel = (EditorPanel) comp;
-                return editorPanel.getTextArea().getText();
-            }
-        }
-        return null;
-    }
-
-
 
     public void saveCurrentEditorAs() {
         int selectedIndex = this.editorPane.getSelectedIndex();

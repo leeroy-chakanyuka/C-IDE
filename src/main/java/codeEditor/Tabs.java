@@ -11,6 +11,7 @@ import java.io.IOException;
 
 public class Tabs {
 
+    JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
     private SideBar sidePanel;
     public JTabbedPane editorPane;
     public JFrame owner;
@@ -30,7 +31,7 @@ public class Tabs {
         this.editorPane.addTab(fileName, editorPanel);
 
         // Create custom tab component with close button
-        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+
         tabPanel.setOpaque(false);
 
         JLabel tabLabel = new JLabel(fileName);
@@ -87,7 +88,7 @@ public class Tabs {
         editorPanel.getTextArea().requestFocusInWindow();
     }
 
-    void saveTabContent(int tabIndex) {
+    public void saveTabContent(int tabIndex) {
         saver.saveTabContent(tabIndex);
     }
 
@@ -123,5 +124,32 @@ public class Tabs {
             }
         }
         return -1;
+    }
+
+    public boolean closeTab(int tabIndex) {
+        if (tabIndex == -1) {
+            return false;
+        }
+        Component comp = editorPane.getComponentAt(tabIndex);
+        if (comp instanceof EditorPanel) {
+        EditorPanel panel = (EditorPanel) editorPane.getComponentAt(tabIndex);
+        if (panel.isModified()) {
+            int result = JOptionPane.showConfirmDialog(
+                    owner,
+                    "File '" + editorPane.getTitleAt(tabIndex).replace("*", "") + "' has unsaved changes. Save before closing?",
+                    "Unsaved Changes",
+                    JOptionPane.YES_NO_CANCEL_OPTION
+            );
+
+            if (result == JOptionPane.YES_OPTION) {
+                saveTabContent(tabIndex);
+            } else if (result == JOptionPane.CANCEL_OPTION) {
+                return false;
+            }
+        }
+
+    }
+        editorPane.removeTabAt(tabIndex);
+        return true;
     }
 }
