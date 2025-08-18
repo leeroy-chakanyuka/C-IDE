@@ -70,3 +70,9 @@ A collection of utility classes that provide helper functions used across the ap
 
 - **Terminal Integration**: Add an integrated terminal to the output panel.
 - **Themes**: Add support for custom themes, including a dark mode.
+
+## License
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.  
+You may use, share, and modify it for personal and educational purposes, but **not for commercial use**.  
+See the [LICENSE](./LICENSE) file for details.
+
