@@ -1,3 +1,7 @@
+package menu;
+
+import sideBar.*;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,7 +14,7 @@ public class menuBar extends JMenuBar {
         this.putClientProperty("JComponent.sizeVariant", "large");
         this.setBackground(new Color(245, 245, 245));
         this.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        System.err.println("MenuBAR WORKS");
+
         this.add(new FileMenu(sidePanel, editorPane, owner));
         this.add(new EditMenu());
         this.add(new RunMenu());

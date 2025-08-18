@@ -1,4 +1,9 @@
-import javax.imageio.ImageIO;
+package sideBar;
+
+import IDE.mainWindow;
+import menu.FileActionHandler;
+import utils.config;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -134,7 +139,7 @@ public class SideBar extends JPanel {
 
 
         try {
-            // Check if the file is already open in mainWindow
+            // Check if the file is already open in IDE.mainWindow
             int existingTabIndex = parentWindow.findOpenFileTab(file);
             if (existingTabIndex != -1) {
                 parentWindow.editorPane.setSelectedIndex(existingTabIndex);

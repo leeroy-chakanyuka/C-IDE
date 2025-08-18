@@ -1,14 +1,16 @@
+package onBoarding;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-
+import utils.*;
 /**
  * This class handles the initial user onboarding process, including name entry,
  * IDE home path selection, and user state management. It displays a welcome screen
  * for new users and automatically launches the main IDE for returning users.
  *
  * The UI construction and event handling logic are largely delegated to
- * makeConfig and makeConfigHandler classes, respectively.
+ * utils.makeConfig and utils.makeConfigHandler classes, respectively.
  * Configuration data access is delegated to a separate Config/ConfigReader structure.
  */
 public class welcomeScreen {
@@ -19,7 +21,7 @@ public class welcomeScreen {
     private JTextField pathField;
     private JTextField nameField;
     private int isLoggedIn = 0;
-    private configReader reader; // welcomeScreen still needs an instance of configReader for its own logic
+    private configReader reader; // onBoarding.welcomeScreen still needs an instance of utils.configReader for its own logic
     private JPanel welcomePanel;
     private makeConfig makeConfigInstance;
     private makeConfigHandler configHandler;

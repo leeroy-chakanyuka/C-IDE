@@ -1,3 +1,5 @@
+package utils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,7 +18,7 @@ public class configReader {
     }
 
     /**
-     * Reads the IDE_HOME_PATH from a meta-config file located
+     * Reads the IDE_HOME_PATH from a meta-utils.config file located
      * in the user's home directory. This allows the application to find
      * its main configuration (data.txt) on subsequent launches.
      *
@@ -26,7 +28,7 @@ public class configReader {
         String userHome = System.getProperty("user.home");
         File metaConfigFile = new File(userHome, this.META_CONFIG_FILE);
         if (!metaConfigFile.exists() || metaConfigFile.length() == 0) {
-            System.out.println("Info: Meta config file not found at " + metaConfigFile.getAbsolutePath() + ". This is normal for the first run.");
+            System.out.println("Info: Meta utils.config file not found at " + metaConfigFile.getAbsolutePath() + ". This is normal for the first run.");
             return null;
         }
 
@@ -34,11 +36,11 @@ public class configReader {
         try (BufferedReader reader = new BufferedReader(new FileReader(metaConfigFile))) {
             String pathLine = reader.readLine();
             if (pathLine != null && !pathLine.isBlank()) {
-                System.out.println("Read IDE_HOME_PATH from meta config: " + pathLine.trim());
+                System.out.println("Read IDE_HOME_PATH from meta utils.config: " + pathLine.trim());
                 return pathLine.trim();
             }
         } catch (IOException e) {
-            System.err.println("Error reading meta config file '" + metaConfigFile.getAbsolutePath() + "': " + e.getMessage());
+            System.err.println("Error reading meta utils.config file '" + metaConfigFile.getAbsolutePath() + "': " + e.getMessage());
             e.printStackTrace();
         }
         return null;

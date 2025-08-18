@@ -1,3 +1,5 @@
+package menu;
+
 import javax.swing.*;
 import java.awt.*;
 
