@@ -63,7 +63,7 @@ A collection of utility classes that provide helper functions used across the ap
 
 2. **Run the main class**:
    ```bash
-   java IDE.mainWindow
+   java main
    ```
 
 ## 5. Coming Improvements
