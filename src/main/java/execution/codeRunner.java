@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 
 import IDE.mainWindow;
+import codeEditor.EditorPanel;
 import codeEditor.Tabs;
 import sideBar.SideBar;
 import utils.NewFileDialog;
@@ -42,7 +43,7 @@ public class codeRunner {
             return;
         }
 
-        mainWindow.EditorPanel currentEditorPanel = (mainWindow.EditorPanel) editorPane.getComponentAt(selectedIndex);
+        EditorPanel currentEditorPanel = (EditorPanel) editorPane.getComponentAt(selectedIndex);
         // Check if file needs to be saved
         if (currentEditorPanel.isModified()) {
             int result = handleUnsavedChanges();
@@ -90,7 +91,7 @@ public class codeRunner {
                 "Save File", JOptionPane.YES_NO_CANCEL_OPTION);
     }
 
-    private File prepareFileForRunning(mainWindow.EditorPanel editorPanel) {
+    private File prepareFileForRunning(EditorPanel editorPanel) {
         File fileToRun = editorPanel.getAssociatedFile();
 
         if (fileToRun == null) {

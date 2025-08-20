@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
 public class Tabs {
 
     JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -25,7 +26,7 @@ public class Tabs {
     }
 
     public void newPopulatedTab(String fileName, String content, String syntaxStyle, File file) {
-        mainWindow.EditorPanel editorPanel = new mainWindow.EditorPanel(file, content, syntaxStyle);
+     EditorPanel editorPanel = new EditorPanel(file, content, syntaxStyle);
 
         // Create a NEW custom JPanel for EACH tab
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -57,8 +58,8 @@ public class Tabs {
             int tabToClose = editorPane.indexOfTabComponent(tabPanel);
             if (tabToClose != -1) {
                 Component component = editorPane.getComponentAt(tabToClose);
-                if (component instanceof mainWindow.EditorPanel) {
-                    mainWindow.EditorPanel panel = (mainWindow.EditorPanel) component;
+                if (component instanceof EditorPanel) {
+                    EditorPanel panel = (EditorPanel) component;
                     if (panel.isModified()) {
                         int result = JOptionPane.showConfirmDialog(
                                 owner,
@@ -110,8 +111,8 @@ public class Tabs {
         }
         for (int i = 0; i < editorPane.getTabCount(); i++) {
             Component comp = editorPane.getComponentAt(i);
-            if (comp instanceof mainWindow.EditorPanel) {
-                mainWindow.EditorPanel editorPanel = (mainWindow.EditorPanel) comp;
+            if (comp instanceof EditorPanel) {
+                EditorPanel editorPanel = (EditorPanel) comp;
                 File associatedFile = editorPanel.getAssociatedFile();
                 if (associatedFile != null) {
                     try {
@@ -153,4 +154,7 @@ public class Tabs {
         editorPane.removeTabAt(tabIndex);
         return true;
     }
+
+
+
 }

@@ -1,6 +1,7 @@
 package menu;
 
 import IDE.mainWindow;
+import codeEditor.EditorPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import javax.swing.*;
 import javax.swing.undo.CannotRedoException;
@@ -18,16 +19,16 @@ public class EditActionHandler {
         this.owner = owner;
     }
 
-    private mainWindow.EditorPanel getActiveEditorPanel() {
+    private EditorPanel getActiveEditorPanel() {
         Component comp = editorPane.getSelectedComponent();
-        if (comp instanceof mainWindow.EditorPanel) {
-            return (mainWindow.EditorPanel) comp;
+        if (comp instanceof EditorPanel) {
+            return (EditorPanel) comp;
         }
         return null;
     }
 
     private RSyntaxTextArea getActiveEditor() {
-        mainWindow.EditorPanel panel = getActiveEditorPanel();
+        EditorPanel panel = getActiveEditorPanel();
         if (panel != null) {
             return panel.getTextArea();
         }
@@ -56,7 +57,7 @@ public class EditActionHandler {
     }
 
     public void undo() {
-        mainWindow.EditorPanel panel = getActiveEditorPanel();
+        EditorPanel panel = getActiveEditorPanel();
         if (panel != null) {
             try {
                 UndoManager undoManager = panel.getUndoManager();
@@ -68,7 +69,7 @@ public class EditActionHandler {
     }
 
     public void redo() {
-        mainWindow.EditorPanel panel = getActiveEditorPanel();
+        EditorPanel panel = getActiveEditorPanel();
         if (panel != null) {
             try {
                 UndoManager undoManager = panel.getUndoManager();

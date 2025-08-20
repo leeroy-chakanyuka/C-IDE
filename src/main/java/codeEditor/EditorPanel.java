@@ -1,67 +1,76 @@
 package codeEditor;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rtextarea.RTextScrollPane;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.io.File;
 
+import org.fife.ui.rtextarea.*;
+import org.fife.ui.rsyntaxtextarea.*;
+import utils.handleFiles;
+
+/**
+ * Custom JPanel to hold the RSyntaxTextArea and its associated File.
+ * This helps in tracking file path and modification status.
+ */
 public class EditorPanel extends JPanel {
-    private RSyntaxTextArea textArea;
     private File associatedFile;
     private boolean modified = false;
+    private static JPanel infoPanel;
+    private RSyntaxTextArea textArea;
+    private UndoManager undoManager;
+    private handleFiles fh;
 
     public EditorPanel(File file, String content, String syntaxStyle) {
         super(new BorderLayout());
         this.associatedFile = file;
-        // A newly created file or opened file is not modified initially
         this.modified = false;
-
+        this.undoManager = new UndoManager();
         this.textArea = new RSyntaxTextArea(70, 180);
-        this.textArea.setText(content);
-        this.textArea.setSyntaxEditingStyle(syntaxStyle);
-        this.textArea.setCodeFoldingEnabled(true);
-        this.textArea.setAntiAliasingEnabled(true);
+        fh = new handleFiles();
 
-        this.textArea.setTabSize(4);
-        this.textArea.setWhitespaceVisible(false);
-        this.textArea.setMarkOccurrences(true);
-        this.textArea.setAutoIndentEnabled(true);
-        this.textArea.setPaintTabLines(true);
+        textArea.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+        textArea.setText(content);
+        textArea.setSyntaxEditingStyle(syntaxStyle);
+        textArea.setCodeFoldingEnabled(true);
+        textArea.setAntiAliasingEnabled(true);
 
+        textArea.setTabSize(4);
+        textArea.setWhitespaceVisible(false);
+        textArea.setMarkOccurrences(true);
+        textArea.setAutoIndentEnabled(true);
+        textArea.setPaintTabLines(true);
 
-        this.textArea.getDocument().addDocumentListener(new DocumentListener() {
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { setModified(true); }
             public void removeUpdate(DocumentEvent e) { setModified(true); }
-            public void changedUpdate(DocumentEvent e) {} // Not used for text changes
+            public void changedUpdate(DocumentEvent e) {}
         });
-
-//            try {
-//                org.fife.ui.rsyntaxtextarea.Theme theme = org.fife.ui.rsyntaxtextarea.Theme.load(
-//                        getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
-//                theme.apply(this.textArea);
-//            } catch (Exception e) {
-//                System.out.println("Could not load theme: " + e.getMessage());
-//            }
 
         RTextScrollPane sp = new RTextScrollPane(textArea);
         sp.setLineNumbersEnabled(true);
         sp.setFoldIndicatorEnabled(true);
         this.add(sp, BorderLayout.CENTER);
 
-        JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         infoPanel.setBackground(new Color(240, 240, 240));
-        JLabel fileInfo = new JLabel("Language: " + getSyntaxStyleName(syntaxStyle) );
+        JLabel fileInfo = new JLabel("Language: " + fh.getSyntaxStyleName(syntaxStyle) + " | Columns: 180");
         fileInfo.setFont(new Font("Arial", Font.PLAIN, 10));
         infoPanel.add(fileInfo);
         this.add(infoPanel, BorderLayout.SOUTH);
     }
+    public boolean isModified() {
+        return modified;
+    }
 
     public RSyntaxTextArea getTextArea() {
         return textArea;
+    }
+
+    public UndoManager getUndoManager() {
+        return undoManager;
     }
 
     public File getAssociatedFile() {
@@ -73,13 +82,15 @@ public class EditorPanel extends JPanel {
         updateTabTitleAndInfo();
     }
 
-    public boolean isModified() {
-        return modified;
-    }
-
     public void setModified(boolean modified) {
         this.modified = modified;
         updateTabTitleAndInfo();
+    }
+
+    public static void setLangPanelCol(Color col) {
+        if (infoPanel != null) {
+            infoPanel.setBackground(col);
+        }
     }
 
     private void updateTabTitleAndInfo() {
@@ -87,7 +98,7 @@ public class EditorPanel extends JPanel {
             JTabbedPane tabbedPane = (JTabbedPane) getParent();
             int index = tabbedPane.indexOfComponent(this);
             if (index != -1) {
-                String title = (associatedFile != null) ? associatedFile.getName() : "Untitled"; // Fallback
+                String title = (associatedFile != null) ? associatedFile.getName() : "Untitled";
                 if (modified) {
                     tabbedPane.setTitleAt(index, title + "*");
                 } else {
@@ -106,44 +117,5 @@ public class EditorPanel extends JPanel {
         }
     }
 
-    public String getSyntaxStyleName(String syntaxStyle) {
-        switch (syntaxStyle) {
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_JAVA:
-                return "Java";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT:
-                return "JavaScript";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_HTML:
-                return "HTML";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_CSS:
-                return "CSS";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_XML:
-                return "XML";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_JSON:
-                return "JSON";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_PYTHON:
-                return "Python";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_C:
-                return "C";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS:
-                return "C++";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_CSHARP:
-                return "C#";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_PHP:
-                return "PHP";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_SQL:
-                return "SQL";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_MARKDOWN:
-                return "Markdown";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_YAML:
-                return "YAML";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH:
-                return "Batch";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL:
-                return "Shell";
-            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE:
-                return "Properties";
-            default:
-                return "Plain Text";
-        }
-    }
+
 }
