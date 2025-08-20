@@ -1,17 +1,24 @@
 package execution;
 
+import IDE.mainWindow;
+
 import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 
-public class RunJava {
-    private JTextArea outputArea;
+public class Java {
+    private final mainWindow parentWindow;
+    private final JTabbedPane editorPane;
+    private final JTextArea outputArea;
+    private codeRunner run;
 
-    public RunJava(JTextArea outputArea) {
+    public Java(mainWindow owner, JTabbedPane editorPane, JTextArea outputArea) {
+        this.parentWindow = owner;
+        this.editorPane = editorPane;
         this.outputArea = outputArea;
     }
 
-    public void runJavaFile(final File sourceFile, final String content) throws IOException, InterruptedException { // Made sourceFile and content final
+    void runJavaFile(final File sourceFile, final String content) throws IOException, InterruptedException {
         final String className = sourceFile.getName().replace(".java", "");
         File tempDirLocal = sourceFile.getParentFile();
 
@@ -27,10 +34,9 @@ public class RunJava {
                 writer.write(content);
             }
         }
-
-
-        outputArea.append("[JAVA] Compiling " + sourceFile.getName() + "...\n");
-        outputArea.setCaretPosition(outputArea.getDocument().getLength());
+        //TODO : maybe make this a util
+        codeRunner run = new codeRunner(parentWindow, editorPane, outputArea);
+        run.appendOutput("[JAVA] Compiling " + sourceFile.getName() + "...\n");
 
         new SwingWorker<Integer, String>() {
             @Override
@@ -59,8 +65,7 @@ public class RunJava {
             @Override
             protected void process(java.util.List<String> chunks) {
                 for (String chunk : chunks) {
-                    outputArea.append(chunk);
-                    outputArea.setCaretPosition(outputArea.getDocument().getLength());
+                    run.appendOutput(chunk);
                 }
             }
 
@@ -69,26 +74,14 @@ public class RunJava {
                 try {
                     int exitCode = get();
                     if (exitCode == 0) {
-                        outputArea.append("[JAVA] Program finished successfully.\n");
-                    } else if (exitCode != 0) {
-                        outputArea.append("[JAVA] Program exited with code: " + exitCode + " (See errors above).\n");
+                        run.appendOutput("[JAVA] Program finished successfully.\n");
+                    } else {
+                        run.appendOutput("[JAVA] Program exited with code: " + exitCode + " (See errors above).\n");
                     }
                 } catch (Exception ex) {
-                    outputArea.append("[ERROR] Failed to run Java program: " + ex.getMessage() + "\n");
+                    run.appendOutput("[ERROR] Failed to run Java program: " + ex.getMessage() + "\n");
                 } finally {
-                    if (sourceFile.getName().startsWith("temp_run_")) {
-                        sourceFile.delete();
-                        File classFile = new File(tempDir, className + ".class");
-                        if (classFile.exists()) {
-                            classFile.delete();
-                        }
-                        if (tempDir.getName().startsWith("chax_java_run_")) {
-                            if (tempDir.isDirectory() && tempDir.list().length == 0) {
-                                tempDir.delete();
-                            }
-                        }
-                    }
-                    outputArea.setCaretPosition(outputArea.getDocument().getLength());
+                    run.cleanupTempFiles(sourceFile, tempDir, className);
                 }
             }
 

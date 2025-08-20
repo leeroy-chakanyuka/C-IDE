@@ -19,9 +19,23 @@ public class handleFiles {
         return content.toString();
     }
 
+    public boolean isTextFile(String fileName) {
+        String[] textExtensions = {
+                ".txt", ".java", ".js", ".html", ".css", ".xml", ".json",
+                ".md", ".py", ".cpp", ".c", ".h", ".cs", ".php", ".sql",
+                ".properties", ".yml", ".yaml", ".log", ".bat", ".sh", ".mjs"
+        };
 
+        String lowerName = fileName.toLowerCase();
+        for (String ext : textExtensions) {
+            if (lowerName.endsWith(ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
     //didn't know where else to put it lol
-    public String detectSyntaxStyle(String fileName) {
+    public static String detectSyntaxStyle(String fileName) {
         String lowerName = fileName.toLowerCase();
         if (lowerName.endsWith(".java")) return SyntaxConstants.SYNTAX_STYLE_JAVA;
         else if (lowerName.endsWith(".js") || lowerName.endsWith(".mjs")) return SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT;
@@ -42,4 +56,8 @@ public class handleFiles {
         else if (lowerName.endsWith(".md") || lowerName.endsWith(".markdown")) return SyntaxConstants.SYNTAX_STYLE_MARKDOWN;
         return SyntaxConstants.SYNTAX_STYLE_NONE;
     }
+
+
+
+
 }

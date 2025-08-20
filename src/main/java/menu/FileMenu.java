@@ -4,7 +4,7 @@ import sideBar.SideBar;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.awt.event.KeyEvent;
 
 public class FileMenu extends JMenu {
     private final Font myFont = new Font("verdana", Font.PLAIN, 13);
@@ -39,6 +39,7 @@ public class FileMenu extends JMenu {
     public void exitApp() {
         JMenuItem exit = new JMenuItem("Exit");
         exit.setFont(myFont);
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
         this.add(exit);
         exit.addActionListener(e -> doThings.exitApplication());
     }
@@ -46,6 +47,7 @@ public class FileMenu extends JMenu {
     public void newFile(){
         JMenuItem newFile = new JMenuItem("New File");
         newFile.setFont(myFont);
+        newFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         this.add(newFile);
         newFile.addActionListener((e) -> {doThings.createNewFile();});
     }
@@ -53,6 +55,7 @@ public class FileMenu extends JMenu {
     public void openFile(){
         JMenuItem openFile = new JMenuItem("Open");
         openFile.setFont(myFont);
+        openFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         this.add(openFile);
         openFile.addActionListener((e -> doThings.openFile()));
     }
@@ -60,6 +63,7 @@ public class FileMenu extends JMenu {
     public void saveFile(){
         JMenuItem saveFile = new JMenuItem("Save");
         saveFile.setFont(myFont);
+        saveFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         this.add(saveFile);
         saveFile.addActionListener((e) -> {doThings.saveFile();});
     }
@@ -67,6 +71,7 @@ public class FileMenu extends JMenu {
     public void saveFileAs(){
         JMenuItem saveAs = new JMenuItem("Save File as..");
         saveAs.setFont(myFont);
+        saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         this.add(saveAs);
         saveAs.addActionListener((e) -> {doThings.saveFileAs();});
     }
@@ -74,6 +79,7 @@ public class FileMenu extends JMenu {
     public void newFolder(){
         JMenuItem newFolder = new JMenuItem("New Folder");
         newFolder.setFont(myFont);
+        newFolder.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         this.add(newFolder);
         newFolder.addActionListener((e) -> {doThings.createFolder();});
     }
@@ -81,6 +87,7 @@ public class FileMenu extends JMenu {
     public void openFolder(){
         JMenuItem openFolder = new JMenuItem("Open Folder");
         openFolder.setFont(myFont);
+        openFolder.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         this.add(openFolder);
         openFolder.addActionListener((e) -> {doThings.openFolder();});
     }
@@ -88,6 +95,7 @@ public class FileMenu extends JMenu {
     public void saveAll(){
         JMenuItem saveAll = new JMenuItem("Save All");
         saveAll.setFont(myFont);
+        saveAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK));
         this.add(saveAll);
         saveAll.addActionListener((e) -> {doThings.saveAllFiles();});
     }
@@ -95,6 +103,7 @@ public class FileMenu extends JMenu {
     public void closeTab(){
         JMenuItem ct = new JMenuItem("Close Current Editor");
         ct.setFont(myFont);
+        ct.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK));
         this.add(ct);
         ct.addActionListener((e) -> {doThings.closeCurrentEditor();});
     }
@@ -102,6 +111,7 @@ public class FileMenu extends JMenu {
     public void closeAll(){
         JMenuItem closeAll = new JMenuItem("Close All");
         closeAll.setFont(myFont);
+        closeAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         this.add(closeAll);
         closeAll.addActionListener((e) -> {doThings.closeAllEditors();});
     }

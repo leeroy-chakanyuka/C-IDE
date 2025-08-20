@@ -1,7 +1,9 @@
 package sideBar;
 
 import IDE.mainWindow;
-import utils.config;
+import codeEditor.Tabs;
+import execution.HTML;
+import utils.*;
 
 
 import javax.swing.*;
@@ -14,12 +16,18 @@ public class SideBar extends JPanel {
     private mainWindow parentWindow;
     private RenderFileTree treeRenderer;
     private JScrollPane currentTreePane;
+    private Tabs tab;
+    private handleFiles fh = new handleFiles();
+    private JTextArea outputArea;
+    private HTML web;
 
-    public SideBar(mainWindow parent, JTabbedPane editor) throws IOException {
+    public SideBar(mainWindow parent, JTabbedPane editor, JTextArea outputArea) throws IOException {
         this.parentWindow = parent;
         this.setBounds(0, 0, 320, 800);
         this.setLayout(null);
-
+        this.tab = new Tabs(this, editor, parent);
+        this.outputArea = outputArea;
+        this.web = new HTML(parentWindow, editor, outputArea);
 
         this.treeRenderer = new RenderFileTree(this::handleFileOpen);
 
@@ -31,7 +39,6 @@ public class SideBar extends JPanel {
     public void renderProjectDirectory() throws IOException {
         renderDirectory(config.getPath());
     }
-
 
     public void renderDirectory(String directoryPath) throws IOException {
         try {
@@ -54,7 +61,6 @@ public class SideBar extends JPanel {
             throw e;
         }
     }
-
 
     public void refreshFileExplorer() {
         try {
@@ -89,17 +95,15 @@ public class SideBar extends JPanel {
             return;
         }
 
+        int existingTabIndex = parentWindow.findOpenFileTab(file);
+        if (existingTabIndex != -1) {
+            // If the file is already open, simply select the existing tab
+            parentWindow.editorPane.setSelectedIndex(existingTabIndex);
+            return;
+        }
+
         String fileName = file.getName().toLowerCase();
-
         try {
-
-            int existingTabIndex = parentWindow.findOpenFileTab(file);
-            if (existingTabIndex != -1) {
-                parentWindow.editorPane.setSelectedIndex(existingTabIndex);
-                JOptionPane.showMessageDialog(this, "File is already open.", "Info", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
             if (fileName.endsWith(".html") || fileName.endsWith(".htm")) {
                 String[] options = {"Open in Editor", "Preview HTML", "Both", "Cancel"};
                 int choice = JOptionPane.showOptionDialog(this,
@@ -113,22 +117,22 @@ public class SideBar extends JPanel {
 
                 switch (choice) {
                     case 0:
-                        parentWindow.newPopulatedTab(file.getName(), parentWindow.readFileContent(file), parentWindow.detectSyntaxStyle(file.getName()), file);
+                        tab.newPopulatedTab(file.getName(), fh.readFileContent(file), handleFiles.detectSyntaxStyle(file.getName()), file);
                         break;
                     case 1:
-                        parentWindow.showHtmlPreview(file);
+                        web.showHtmlPreview(file);
                         break;
                     case 2:
-                        parentWindow.newPopulatedTab(file.getName(), parentWindow.readFileContent(file), parentWindow.detectSyntaxStyle(file.getName()), file);
-                        parentWindow.showHtmlPreview(file);
+                        tab.newPopulatedTab(file.getName(), fh.readFileContent(file), handleFiles.detectSyntaxStyle(file.getName()), file);
+                        web.showHtmlPreview(file);
                         break;
                     case 3:
                         break;
                 }
-            } else if (parentWindow.isTextFile(fileName)) {
-                parentWindow.newPopulatedTab(file.getName(), parentWindow.readFileContent(file), parentWindow.detectSyntaxStyle(file.getName()), file);
+            } else if (fh.isTextFile(fileName)) {
+                tab.newPopulatedTab(file.getName(), fh.readFileContent(file), handleFiles.detectSyntaxStyle(file.getName()), file);
             } else {
-                parentWindow.openFileInDefaultBrowser(file);
+                web.openFileInDefaultBrowser(file);
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
@@ -155,7 +159,6 @@ public class SideBar extends JPanel {
     public RenderFileTree getTreeRenderer() {
         return treeRenderer;
     }
-
 
     public void switchProject(String projectPath) {
         try {

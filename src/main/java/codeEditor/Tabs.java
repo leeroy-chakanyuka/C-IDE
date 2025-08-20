@@ -25,13 +25,10 @@ public class Tabs {
     }
 
     public void newPopulatedTab(String fileName, String content, String syntaxStyle, File file) {
-        EditorPanel editorPanel = new EditorPanel(file, content, syntaxStyle);
+        mainWindow.EditorPanel editorPanel = new mainWindow.EditorPanel(file, content, syntaxStyle);
 
-        int tabIndex = this.editorPane.getTabCount();
-        this.editorPane.addTab(fileName, editorPanel);
-
-        // Create custom tab component with close button
-
+        // Create a NEW custom JPanel for EACH tab
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         tabPanel.setOpaque(false);
 
         JLabel tabLabel = new JLabel(fileName);
@@ -56,23 +53,25 @@ public class Tabs {
             }
         });
 
-
         closeButton.addActionListener(e -> {
             int tabToClose = editorPane.indexOfTabComponent(tabPanel);
             if (tabToClose != -1) {
-                EditorPanel panel = (EditorPanel) editorPane.getComponentAt(tabToClose);
-                if (panel.isModified()) {
-                    int result = JOptionPane.showConfirmDialog(
-                            owner,
-                            "File '" + editorPane.getTitleAt(tabToClose).replace("*", "") + "' has unsaved changes. Save before closing?",
-                            "Unsaved Changes",
-                            JOptionPane.YES_NO_CANCEL_OPTION
-                    );
+                Component component = editorPane.getComponentAt(tabToClose);
+                if (component instanceof mainWindow.EditorPanel) {
+                    mainWindow.EditorPanel panel = (mainWindow.EditorPanel) component;
+                    if (panel.isModified()) {
+                        int result = JOptionPane.showConfirmDialog(
+                                owner,
+                                "File '" + editorPane.getTitleAt(tabToClose).replace("*", "") + "' has unsaved changes. Save before closing?",
+                                "Unsaved Changes",
+                                JOptionPane.YES_NO_CANCEL_OPTION
+                        );
 
-                    if (result == JOptionPane.YES_OPTION) {
-                        saveTabContent(tabToClose);
-                    } else if (result == JOptionPane.CANCEL_OPTION) {
-                        return; // Don't close
+                        if (result == JOptionPane.YES_OPTION) {
+                            saveTabContent(tabToClose);
+                        } else if (result == JOptionPane.CANCEL_OPTION) {
+                            return; // Don't close
+                        }
                     }
                 }
                 editorPane.removeTabAt(tabToClose);
@@ -83,6 +82,8 @@ public class Tabs {
         tabPanel.add(Box.createHorizontalStrut(5));
         tabPanel.add(closeButton);
 
+        this.editorPane.addTab(fileName, editorPanel);
+        int tabIndex = this.editorPane.getTabCount() - 1;
         this.editorPane.setTabComponentAt(tabIndex, tabPanel);
         this.editorPane.setSelectedIndex(tabIndex);
         editorPanel.getTextArea().requestFocusInWindow();
