@@ -9,6 +9,7 @@ import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 
+import Bottom.*;
 import codeEditor.EditorPanel;
 import menu.menuBar;
 import org.fife.ui.rtextarea.*;
@@ -25,11 +26,11 @@ public class mainWindow extends JFrame {
     public JTabbedPane editorPane;
     private Font myFont = new Font("verdana", Font.BOLD, 14);
     private JTextField commandInput;
-    private JTextArea outputArea;
+    private OutputConsole outputArea;
     private configReader reader = new configReader(config.getIdeHomePath(), config.getDataFile(), config.META_CONFIG_FILE);
     private Font menuFont = new Font("vedana", Font.PLAIN, 14 );
     public static RSyntaxTextArea textArea = new RSyntaxTextArea(70, 180);
-
+    private Bottom.Container bottomPanel;
     public mainWindow() throws IOException {
         this.undoManager = new UndoManager();
 
@@ -40,11 +41,17 @@ public class mainWindow extends JFrame {
         this.editorPane.setBounds(320, 5, 1060, 500);
         this.editorPane.setBackground(new Color(203, 108, 230));
         this.add(this.editorPane);
-        this.createOutputPanel();
-        this.sidePanel = new SideBar(this, editorPane, outputArea);
+        this.outputArea = new OutputConsole(320, 510, 1060, 240);
+
+        this.bottomPanel = new Bottom.Container(outputArea);
+        this.bottomPanel.setBounds(320, 510, 1060, 240);
+        this.add(this.bottomPanel);
+
+
+        this.sidePanel = new SideBar(this, editorPane, outputArea.getOutputArea());
         this.add(sidePanel);
 
-        JMenuBar myMenu = new menuBar(this.sidePanel, this.editorPane, this, outputArea);
+        JMenuBar myMenu = new menuBar(this.sidePanel, this.editorPane, this, outputArea.getOutputArea());
 
         this.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("icons/logo.png")));
         this.setJMenuBar(myMenu);
@@ -61,33 +68,6 @@ public class mainWindow extends JFrame {
     }
 
 
-    private void createOutputPanel() {
-        JPanel outputPanel = new JPanel(new BorderLayout());
-        outputPanel.setBounds(320, 505, 1068, 265);
-        outputPanel.setBackground(new Color(73, 69, 69));
-        outputPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY),
-                "Output",
-                javax.swing.border.TitledBorder.LEFT,
-                javax.swing.border.TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 12),
-                Color.WHITE));
-
-        outputArea = new JTextArea();
-        outputArea.setBackground(new Color(30, 30, 30));
-        outputArea.setForeground(new Color(255, 255, 255));
-        outputArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        outputArea.setEditable(false);
-        outputArea.setFocusable(false);
-        outputArea.setText("Chax IDE Output Console v1.0\n\n");
-
-        JScrollPane outputScroll = new JScrollPane(outputArea);
-        outputScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-        outputPanel.add(outputScroll, BorderLayout.CENTER);
-
-        this.add(outputPanel);
-    }
 
     public int findOpenFileTab(File file) {
         String canonicalPath;
