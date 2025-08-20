@@ -1,5 +1,6 @@
+package utils;
+
 import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -131,7 +132,7 @@ public class NewFileDialog extends JDialog {
     }
 
     private void populateDefaultValues() {
-        // Use config path instead of current working directory
+        // Use utils.config path instead of current working directory
         String configPath = config.getPath();
         if (configPath != null && !configPath.isEmpty()) {
             selectedDirectory = new File(configPath);
@@ -140,7 +141,7 @@ public class NewFileDialog extends JDialog {
                 selectedDirectory.mkdirs();
             }
         } else {
-            // Fallback to current working directory if config path is not available
+            // Fallback to current working directory if utils.config path is not available
             selectedDirectory = new File(System.getProperty("user.dir"));
         }
 

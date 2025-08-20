@@ -1,3 +1,5 @@
+package utils;
+
 import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,14 +22,14 @@ public class configWriter {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(metaConfigFile))) {
             writer.write(path);
-            System.out.println("Wrote IDE_HOME_PATH to meta config: " + metaConfigFile.getAbsolutePath());
+            System.out.println("Wrote IDE_HOME_PATH to meta utils.config: " + metaConfigFile.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Error writing meta config file '" + metaConfigFile.getAbsolutePath() + "': " + e.getMessage());
+            System.err.println("Error writing meta utils.config file '" + metaConfigFile.getAbsolutePath() + "': " + e.getMessage());
             throw e;
         }
     }
     /**
-     * Writes the determined IDE_HOME_PATH to a predictable meta-config file
+     * Writes the determined IDE_HOME_PATH to a predictable meta-utils.config file
      * in the user's home directory. This is called after the user selects
      * their IDE home path during the initial onboarding.
      *
