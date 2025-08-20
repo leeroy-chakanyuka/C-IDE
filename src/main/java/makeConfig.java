@@ -1,5 +1,3 @@
-package utils;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -78,7 +76,7 @@ public class makeConfig {
     }
 
 
-    public void addFolderIcon(GridBagConstraints gbc) throws IOException {
+    void addFolderIcon(GridBagConstraints gbc) throws IOException {
         JLabel iconLabel = createFolderIconLabel();
         gbc.gridx = 2;
         gbc.gridy = 2;

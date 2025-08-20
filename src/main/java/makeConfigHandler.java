@@ -1,7 +1,3 @@
-package utils;
-
-import IDE.mainWindow;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

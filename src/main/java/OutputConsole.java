@@ -1,5 +1,3 @@
-package IDE;
-
 import javax.swing.*;
 import java.awt.*;
 
