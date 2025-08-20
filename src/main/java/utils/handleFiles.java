@@ -34,7 +34,7 @@ public class handleFiles {
         }
         return false;
     }
-    //didn't know where else to put it lol
+
     public static String detectSyntaxStyle(String fileName) {
         String lowerName = fileName.toLowerCase();
         if (lowerName.endsWith(".java")) return SyntaxConstants.SYNTAX_STYLE_JAVA;
@@ -55,6 +55,47 @@ public class handleFiles {
         else if (lowerName.endsWith(".yml") || lowerName.endsWith(".yaml")) return SyntaxConstants.SYNTAX_STYLE_YAML;
         else if (lowerName.endsWith(".md") || lowerName.endsWith(".markdown")) return SyntaxConstants.SYNTAX_STYLE_MARKDOWN;
         return SyntaxConstants.SYNTAX_STYLE_NONE;
+    }
+
+    public static String getSyntaxStyleName(String syntaxStyle) {
+        switch (syntaxStyle) {
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_JAVA:
+                return "Java";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT:
+                return "JavaScript";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_HTML:
+                return "HTML";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_CSS:
+                return "CSS";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_XML:
+                return "XML";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_JSON:
+                return "JSON";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_PYTHON:
+                return "Python";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_C:
+                return "C";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS:
+                return "C++";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_CSHARP:
+                return "C#";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_PHP:
+                return "PHP";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_SQL:
+                return "SQL";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_MARKDOWN:
+                return "Markdown";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_YAML:
+                return "YAML";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH:
+                return "Batch";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL:
+                return "Shell";
+            case org.fife.ui.rsyntaxtextarea.SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE:
+                return "Properties";
+            default:
+                return "Plain Text";
+        }
     }
 
 

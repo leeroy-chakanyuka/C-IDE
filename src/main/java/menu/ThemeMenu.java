@@ -1,6 +1,7 @@
 package menu;
 
 import IDE.mainWindow;
+import codeEditor.EditorPanel;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -44,8 +45,8 @@ public class ThemeMenu extends JMenu {
             if (selectedIndex != -1) {
                 Component selectedComponent = tabbedPane.getComponentAt(selectedIndex);
 
-                if (selectedComponent instanceof mainWindow.EditorPanel) {
-                    mainWindow.EditorPanel editorPanel = (mainWindow.EditorPanel) selectedComponent;
+                if (selectedComponent instanceof EditorPanel) {
+                    EditorPanel editorPanel = (EditorPanel) selectedComponent;
                     RSyntaxTextArea textArea = editorPanel.getTextArea(); // Get the correct instance
                     Theme theme = Theme.load(
                             getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
@@ -62,14 +63,14 @@ public class ThemeMenu extends JMenu {
             FlatDarkLaf.setup();
             SwingUtilities.updateComponentTreeUI(owner);
             owner.setEditorPaneColor(new Color(0, 5, 193));
-            mainWindow.EditorPanel.setLangPanelCol(new Color(70, 73, 75));
+            EditorPanel.setLangPanelCol(new Color(70, 73, 75));
 
             int selectedIndex = tabbedPane.getSelectedIndex();
             if (selectedIndex != -1) {
                 Component selectedComponent = tabbedPane.getComponentAt(selectedIndex);
 
-                if (selectedComponent instanceof mainWindow.EditorPanel) {
-                    mainWindow.EditorPanel editorPanel = (mainWindow.EditorPanel) selectedComponent;
+                if (selectedComponent instanceof EditorPanel) {
+                    EditorPanel editorPanel = (EditorPanel) selectedComponent;
                     RSyntaxTextArea textArea = editorPanel.getTextArea(); // Get the correct instance
                     Theme theme = Theme.load(
                             getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
