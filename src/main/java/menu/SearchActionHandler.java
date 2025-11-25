@@ -70,9 +70,27 @@ public class SearchActionHandler {
             if (selectedComponent instanceof EditorPanel) {
                 JTextArea textArea = ((EditorPanel) selectedComponent).getTextArea();
                 String content = textArea.getText();
-                String newContent = content.replace(findText, replaceText);
-                textArea.setText(newContent);
-                JOptionPane.showMessageDialog(editorPane, "Replacement complete.", "Replace Result", JOptionPane.INFORMATION_MESSAGE);
+                // Count occurrences
+                int count = 0;
+                int idx = content.indexOf(findText);
+                while (idx != -1) {
+                    count++;
+                    idx = content.indexOf(findText, idx + findText.length());
+                }
+                if (count == 0) {
+                    JOptionPane.showMessageDialog(editorPane, "No occurrences found.", "Replace Result", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                int confirm = JOptionPane.showConfirmDialog(editorPane,
+                        "Replace all " + count + " occurrence(s) of \"" + findText + "\" with \"" + replaceText + "\"?",
+                        "Confirm Replace",
+                        JOptionPane.OK_CANCEL_OPTION);
+                if (confirm == JOptionPane.OK_OPTION) {
+                    String newContent = content.replace(findText, replaceText);
+                    textArea.setText(newContent);
+                    ((EditorPanel) selectedComponent).setModified(true);
+                    JOptionPane.showMessageDialog(editorPane, "Replaced " + count + " occurrence(s).", "Replace Result", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         }
     }
