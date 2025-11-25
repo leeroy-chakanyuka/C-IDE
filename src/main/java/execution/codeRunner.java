@@ -44,7 +44,7 @@ public class codeRunner {
         }
 
         EditorPanel currentEditorPanel = (EditorPanel) editorPane.getComponentAt(selectedIndex);
-        // Check if file needs to be saved
+        // does need to be saved
         if (currentEditorPanel.isModified()) {
             int result = handleUnsavedChanges();
             if (result == JOptionPane.CANCEL_OPTION) {
@@ -74,17 +74,11 @@ public class codeRunner {
         outputArea.setText("Chax IDE Output Console v1.0\n\n");
     }
 
-    /**
-     * Appends text to output and scrolls to bottom
-     */
     void appendOutput(String text) {
         outputArea.append(text);
         outputArea.setCaretPosition(outputArea.getDocument().getLength());
     }
 
-    /**
-     * Handles dialog for unsaved changes
-     */
     private int handleUnsavedChanges() {
         return JOptionPane.showConfirmDialog(parentWindow,
                 "Current file has unsaved changes. Save before running?",

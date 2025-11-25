@@ -5,7 +5,7 @@ import java.awt.*;
 
 /**
  * A container panel that uses a JTabbedPane to hold both the
- * OutputConsole and a new Terminal panel.
+ * OutputConsole and a new Terminal panel
  */
 public class Container extends JPanel {
     private JTabbedPane tabbedPane;
@@ -59,16 +59,10 @@ public class Container extends JPanel {
         return outputConsole.getOutputArea();
     }
 
-    /**
-     * Get access to the OutputConsole instance
-     */
     public OutputConsole getOutputConsole() {
         return outputConsole;
     }
 
-    /**
-     * Get access to the Terminal instance
-     */
     public Terminal getTerminal() {
         return terminal;
     }
